@@ -4,146 +4,62 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>pretty</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300..500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..500&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Inter', sans-serif;
+      min-height: 100dvh;
       display: grid;
       place-items: center;
-      min-height: 100dvh;
-      overflow: hidden;
-      background: #0a0a0f;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0d1b2a 0%, #1b0a2e 50%, #0a1a1a 100%);
     }
-
-    /* Orb layer — fully isolated, never triggers card repaint */
-    .orbs {
-      position: fixed; inset: 0; z-index: 0;
-      pointer-events: none;
-      contain: strict;
-    }
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      opacity: 0.6;
-      will-change: transform;
-      animation: drift 14s ease-in-out infinite alternate;
-    }
-    .orb-1 { width: 520px; height: 520px; background: oklch(0.52 0.18 192); top: -120px; left: -100px; animation-duration: 16s; filter: blur(70px); }
-    .orb-2 { width: 400px; height: 400px; background: oklch(0.48 0.16 280); bottom: -80px; right: -60px; animation-duration: 12s; animation-delay: -4s; filter: blur(60px); }
-    .orb-3 { width: 300px; height: 300px; background: oklch(0.55 0.14 340); top: 40%; left: 55%; animation-duration: 18s; animation-delay: -8s; filter: blur(50px); }
-
-    @keyframes drift {
-      from { transform: translate3d(0, 0, 0) scale(1); }
-      to   { transform: translate3d(40px, 30px, 0) scale(1.08); }
-    }
-
-    /* Card — isolated stacking context so backdrop-filter doesn't chase the orbs */
     .card {
-      position: relative;
-      z-index: 1;
-      isolation: isolate;
-      width: clamp(320px, 90vw, 480px);
-      padding: 3rem 2.5rem;
-      border-radius: 1.5rem;
-      background: oklch(1 0 0 / 0.07);
-      border: 1px solid oklch(1 0 0 / 0.12);
-      backdrop-filter: blur(var(--blur, 12px)) saturate(160%);
-      -webkit-backdrop-filter: blur(var(--blur, 12px)) saturate(160%);
-      box-shadow:
-        0 2px 4px oklch(0 0 0 / 0.3),
-        0 16px 48px oklch(0 0 0 / 0.4),
-        inset 0 1px 0 oklch(1 0 0 / 0.1);
-      transition:
-        backdrop-filter 600ms cubic-bezier(0.16, 1, 0.3, 1),
-        -webkit-backdrop-filter 600ms cubic-bezier(0.16, 1, 0.3, 1);
+      width: clamp(300px, 85vw, 440px);
+      padding: 2.5rem;
+      border-radius: 1.25rem;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(var(--blur, 14px));
+      -webkit-backdrop-filter: blur(var(--blur, 14px));
+      transition: backdrop-filter 500ms ease, -webkit-backdrop-filter 500ms ease;
+      color: #e8e6e0;
     }
-
-    .eyebrow { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.75 0.12 192); margin-bottom: 1.25rem; }
-    h1 { font-family: 'Instrument Serif', serif; font-size: clamp(2rem, 5vw, 2.75rem); font-weight: 400; line-height: 1.1; color: oklch(0.97 0.01 80); margin-bottom: 1rem; }
-    h1 em { font-style: italic; color: oklch(0.78 0.12 192); }
-    p { font-size: 0.9rem; font-weight: 300; line-height: 1.7; color: oklch(0.75 0.02 80); max-width: 38ch; margin-bottom: 2.25rem; }
-
+    h1 { font-size: 1.75rem; font-weight: 300; margin-bottom: 0.75rem; letter-spacing: -0.02em; }
+    p  { font-size: 0.875rem; color: rgba(255,255,255,0.5); line-height: 1.7; margin-bottom: 2rem; }
     .btn {
-      display: inline-flex; align-items: center; gap: 0.6rem;
-      padding: 0.75rem 1.75rem; border-radius: 999px;
-      border: 1px solid oklch(1 0 0 / 0.18);
-      background: oklch(1 0 0 / 0.1);
-      color: oklch(0.95 0.01 80);
-      font-family: 'Inter', sans-serif; font-size: 0.875rem; font-weight: 400;
-      letter-spacing: 0.02em; cursor: pointer;
-      transition: background 200ms ease, border-color 200ms ease, transform 120ms ease;
-      user-select: none;
+      padding: 0.65rem 1.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.1);
+      color: #e8e6e0;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: background 150ms ease;
     }
-    .btn:hover { background: oklch(1 0 0 / 0.16); border-color: oklch(1 0 0 / 0.28); }
-    .btn:active { transform: scale(0.97); }
-    .btn svg { transition: transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1); }
-    .btn:hover svg { transform: rotate(20deg) scale(1.1); }
-
-    .blur-hint { margin-top: 1.5rem; font-size: 0.7rem; color: oklch(0.5 0.02 80); letter-spacing: 0.06em; text-align: center; transition: color 400ms ease; }
-    .blur-hint.active { color: oklch(0.68 0.1 192); }
-    .divider { width: 100%; height: 1px; background: oklch(1 0 0 / 0.08); margin: 2rem 0; }
-    .meta { display: flex; gap: 1.5rem; }
-    .meta-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: oklch(0.45 0.02 80); margin-bottom: 0.2rem; }
-    .meta-value { font-size: 0.85rem; color: oklch(0.82 0.04 192); font-weight: 300; }
+    .btn:hover { background: rgba(255,255,255,0.18); }
+    .btn:disabled { opacity: 0.35; cursor: default; }
+    .readout { margin-top: 1.25rem; font-size: 0.7rem; color: rgba(255,255,255,0.3); font-family: monospace; }
   </style>
 </head>
 <body>
-
-<div class="orbs">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-</div>
-
-<div class="card" id="card">
-  <div class="eyebrow">Perpex · Preview</div>
-  <h1>Glass that <em>breathes.</em></h1>
-  <p>Push the button. Watch the world behind dissolve a little further. That&rsquo;s all this is.</p>
-  <button class="btn" id="blurBtn" onclick="addBlur()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-      <circle cx="12" cy="12" r="3"/>
-      <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-    </svg>
-    Blur more
-  </button>
-  <div class="blur-hint" id="hint">backdrop-filter: blur(12px)</div>
-  <div class="divider"></div>
-  <div class="meta">
-    <div class="meta-item"><div class="meta-label">Blur</div><div class="meta-value" id="blurVal">12px</div></div>
-    <div class="meta-item"><div class="meta-label">Clicks</div><div class="meta-value" id="clicks">0</div></div>
-    <div class="meta-item"><div class="meta-label">Status</div><div class="meta-value" id="status">nominal</div></div>
+  <div class="card" id="card">
+    <h1>Glass card</h1>
+    <p>Click the button to increase the blur behind this panel.</p>
+    <button class="btn" id="btn" onclick="step()">Blur more</button>
+    <div class="readout" id="readout">blur: 14px</div>
   </div>
-</div>
-
-<script>
-  let blur = 12, count = 0;
-  const card = document.getElementById('card');
-  const hint = document.getElementById('hint');
-  const blurVal = document.getElementById('blurVal');
-  const clicksEl = document.getElementById('clicks');
-  const statusEl = document.getElementById('status');
-  const btn = document.getElementById('blurBtn');
-  const statuses = ['nominal','hazy','frosted','opaque','void','transcendent'];
-
-  function addBlur() {
-    blur = Math.min(blur + 10, 100);
-    count++;
-    card.style.setProperty('--blur', blur + 'px');
-    hint.textContent = 'backdrop-filter: blur(' + blur + 'px)';
-    hint.classList.add('active');
-    blurVal.textContent = blur + 'px';
-    clicksEl.textContent = count;
-    statusEl.textContent = statuses[Math.min(Math.floor(count / 2), statuses.length - 1)];
-    if (blur >= 100) {
-      btn.textContent = 'maximum blur';
-      btn.disabled = true;
-      btn.style.opacity = '0.4';
+  <script>
+    let b = 14;
+    const card = document.getElementById('card');
+    const btn  = document.getElementById('btn');
+    const out  = document.getElementById('readout');
+    function step() {
+      b = Math.min(b + 12, 80);
+      card.style.setProperty('--blur', b + 'px');
+      out.textContent = 'blur: ' + b + 'px';
+      if (b >= 80) { btn.textContent = 'maxed out'; btn.disabled = true; }
     }
-  }
-</script>
+  </script>
 </body>
 </html>
