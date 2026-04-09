@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root,[data-theme="light"]{--bg:#f7f6f2;--surface:#f9f8f5;--s2:#fbfbf9;--soff:#f3f0ec;--bord:#d4d1ca;--txt:#28251d;--muted:#7a7974;--faint:#bab9b4;--pri:#01696f;--prih:#0c4e54;--ok:#437a22;--err:#a12c7b;--gut:#ede9e5;--gutt:#aaa8a3;}
+  [data-theme="dark"]{--bg:#171614;--surface:#1c1b19;--s2:#201f1d;--soff:#1d1c1a;--bord:#393836;--txt:#cdccca;--muted:#797876;--faint:#5a5957;--pri:#4f98a3;--prih:#227f8b;--ok:#6daa45;--err:#d163a7;--gut:#222120;--gutt:#5a5855;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-font-smoothing:antialiased;height:100%;}
+  body{font-family:"Inter",sans-serif;font-size:13px;color:var(--txt);background:var(--bg);height:100dvh;display:flex;flex-direction:column;overflow:hidden;}
+  .bar{display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--surface);border-bottom:1px solid var(--bord);flex-shrink:0;flex-wrap:wrap;}
+  .brand{font-weight:600;color:var(--pri);margin-right:4px;}
+  .sp{flex:1;}
+  button{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:5px;font-size:12px;font-family:inherit;font-weight:500;cursor:pointer;border:1px solid transparent;background:transparent;color:var(--txt);transition:background 150ms,color 150ms,border-color 150ms;}
+  .ghost{color:var(--muted);}
+  .ghost:hover,.outline:hover{background:var(--soff);color:var(--txt);}
+  .outline{border-color:var(--bord);}
+  .primary{background:var(--pri);color:#fff;border-color:var(--pri);}
+  .primary:hover{background:var(--prih);border-color:var(--prih);}
+  .danger{color:var(--err);border-color:color-mix(in oklab,var(--err) 30%,transparent);}
+  .danger:hover{background:color-mix(in oklab,var(--err) 10%,transparent);}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--ok);display:inline-block;transition:background 150ms;}
+  .stxt{font-size:11px;color:var(--muted);}
+  .findbar{display:inline-flex;align-items:center;gap:6px;margin-left:8px;}
+  .findbar input{width:180px;padding:5px 8px;border-radius:5px;border:1px solid var(--bord);background:var(--s2);color:var(--txt);outline:none;}
+  .findbar input:focus{border-color:var(--pri);}
+  .ws{flex:1;display:flex;overflow:hidden;}
+  .pane{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+  .pane+.pane{border-left:1px solid var(--bord);}
+  .ph{display:flex;align-items:center;gap:6px;padding:4px 10px;background:var(--soff);border-bottom:1px solid var(--bord);flex-shrink:0;font-size:11px;color:var(--muted);}
+  .ph strong{font-size:12px;font-weight:500;color:var(--txt);}
+  .ew{flex:1;display:flex;overflow:hidden;}
+  .ln{padding:10px 6px;background:var(--gut);color:var(--gutt);font-family:"JetBrains Mono",monospace;font-size:12px;line-height:1.65;text-align:right;user-select:none;overflow:hidden;flex-shrink:0;min-width:38px;border-right:1px solid var(--bord);white-space:pre;}
+  textarea{flex:1;resize:none;border:none;outline:none;background:var(--s2);color:var(--txt);font-family:"JetBrains Mono",monospace;font-size:12px;line-height:1.65;padding:10px;tab-size:2;scrollbar-width:thin;scrollbar-color:var(--bord) transparent;}
+  iframe{flex:1;border:none;background:#fff;}
+  [data-theme="dark"] iframe{background:#1a1a1a;}
+  .div{width:4px;background:var(--bord);cursor:col-resize;flex-shrink:0;transition:background 150ms;}
+  .div:hover{background:var(--pri);}
+  .sb{display:flex;align-items:center;gap:12px;padding:0 12px;height:22px;background:var(--soff);border-top:1px solid var(--bord);flex-shrink:0;font-size:11px;color:var(--muted);}
+  input[type=file]{display:none;}
+  @media(max-width:600px){.ws{flex-direction:column;}.pane+.pane{border-left:none;border-top:1px solid var(--bord);}.div{display:none;}}
+</style>
+</head>
+<body>
+<div class="bar">
+  <span class="brand">&#9998; HTML Editor</span>
+  <button class="outline" onclick="document.getElementById('fi').click()">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Open
+  </button>
+  <input type="file" id="fi" accept=".html,.htm,.txt" onchange="openFile(event)">
+  <button class="outline" onclick="saveFile()">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save
+  </button>
+  <button class="primary" onclick="runPreview()">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>Run
+  </button>
+  <button class="outline" onclick="openInTab()">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Pop out
+  </button>
+  <button class="danger" onclick="clearEditor()">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>Clear
+  </button>
+  <div class="findbar">
+    <input id="findInput" type="search" placeholder="Find in code">
+    <button class="outline" onclick="findPrev()">Prev</button>
+    <button class="outline" onclick="findNext()">Next</button>
+    <span class="stxt" id="findCount">0 results</span>
+  </div>
+  <span class="sp"></span>
+  <span class="dot" id="dot"></span>
+  <span class="stxt" id="stxt">Ready</span>
+  <button class="ghost" id="themeBtn" onclick="toggleTheme()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
+</div>
+
+<div class="ws" id="ws">
+  <div class="pane" id="ep">
+    <div class="ph"><strong>Editor</strong><span id="fn" style="color:var(--faint)">untitled.html</span></div>
+    <div class="ew">
+      <div class="ln" id="ln"></div>
+      <textarea id="ed" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+    </div>
+  </div>
+  <div class="div" id="dv"></div>
+  <div class="pane">
+    <div class="ph">
+      <strong>Preview</strong>
+      <button class="ghost" onclick="toggleEditor()" style="margin-left:auto" title="Toggle editor">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+      </button>
+    </div>
+    <iframe id="pv" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+</div>
+
+<div class="sb">
+  <span id="sbl">1 line</span>
+  <span id="sbc">Ln 1, Col 1</span>
+  <span id="sbch">0 chars</span>
+  <span>HTML</span>
+</div>
+
+<script>
+const ed = document.getElementById('ed');
+const pv = document.getElementById('pv');
+const ln = document.getElementById('ln');
+const dot = document.getElementById('dot');
+const stxt = document.getElementById('stxt');
+const findInput = document.getElementById('findInput');
+const findCount = document.getElementById('findCount');
+let timer = null, curFile = 'untitled.html', isDark = true;
+let matches = [], matchIndex = -1;
+
+const DEFAULT_CODE = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transparent Zen Demo</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+      color: white;
+      display: grid;
+      place-items: center;
+      padding: 32px;
+    }
+
+    .panel {
+      width: min(720px, 100%);
+      padding: 32px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.10);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      backdrop-filter: blur(28px) saturate(180%);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 5vw, 3.75rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+    }
+
+    p {
+      margin: 0 0 22px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.78);
+      max-width: 52ch;
+    }
+
+    .row { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    button {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.12);
+      color: white;
+      padding: 11px 16px;
+      border-radius: 999px;
+      font: inherit;
+      cursor: pointer;
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
+      backdrop-filter: blur(16px) saturate(160%);
+    }
+  </style>
+</head>
+<body>
+  <section class="panel">
+    <h1>Transparent page.</h1>
+    <p>The page background is fully transparent, so Zen can let the desktop bleed through. The blur only lives on this panel and buttons, where it belongs.</p>
+    <div class="row">
+      <button>Primary</button>
+      <button>Secondary</button>
+    </div>
+  </section>
+</body>
+</html>`;
+
+ed.value = DEFAULT_CODE;
+
+function openInTab() {
+  const b = new Blob([ed.value], {type:'text/html'});
+  const u = URL.createObjectURL(b);
+  window.open(u, '_blank');
+}
+
+function findMatches() {
+  const query = findInput.value.toLowerCase();
+  const text = ed.value.toLowerCase();
+  matches = [];
+  matchIndex = -1;
+  if (!query) { findCount.textContent = '0 results'; return; }
+  let pos = 0;
+  while ((pos = text.indexOf(query, pos)) !== -1) {
+    matches.push(pos);
+    pos += query.length || 1;
+  }
+  findCount.textContent = `${matches.length} result${matches.length === 1 ? '' : 's'}`;
+}
+
+function jumpToMatch(index) {
+  if (!matches.length) return;
+  matchIndex = (index + matches.length) % matches.length;
+  const start = matches[matchIndex];
+  const end = start + findInput.value.length;
+  ed.focus();
+  ed.selectionStart = start;
+  ed.selectionEnd = end;
+  updateCursor();
+}
+
+function findNext() {
+  findMatches();
+  if (!matches.length) return;
+  jumpToMatch(matchIndex + 1);
+}
+
+function findPrev() {
+  findMatches();
+  if (!matches.length) return;
+  jumpToMatch(matchIndex - 1);
+}
+
+findInput.addEventListener('input', findMatches);
+
+function updateLn() {
+  const lines = ed.value.split('\n');
+  ln.textContent = lines.map((_,i) => i+1).join('\n');
+  document.getElementById('sbl').textContent = lines.length + ' lines';
+  document.getElementById('sbch').textContent = ed.value.length + ' chars';
+}
+
+function updateCursor() {
+  const pre = ed.value.substring(0, ed.selectionStart).split('\n');
+  document.getElementById('sbc').textContent = 'Ln ' + pre.length + ', Col ' + (pre[pre.length-1].length+1);
+}
+
+function setStatus(msg, type) {
+  stxt.textContent = msg;
+  dot.style.background = type==='ok' ? 'var(--ok)' : type==='err' ? 'var(--err)' : 'var(--faint)';
+}
+
+function runPreview() {
+  try {
+    const b = new Blob([ed.value], {type:'text/html'});
+    const u = URL.createObjectURL(b);
+    const old = pv.src;
+    pv.src = u;
+    if (old && old.startsWith('blob:')) URL.revokeObjectURL(old);
+    setStatus('Updated','ok'); setTimeout(()=>setStatus('Ready','idle'),1500);
+  } catch(e) { setStatus('Error','err'); }
+}
+
+function saveFile() {
+  const a = Object.assign(document.createElement('a'), {href: URL.createObjectURL(new Blob([ed.value],{type:'text/html'})), download: curFile});
+  a.click(); URL.revokeObjectURL(a.href);
+  setStatus('Saved','ok'); setTimeout(()=>setStatus('Ready','idle'),2000);
+}
+
+function openFile(e) {
+  const f = e.target.files[0]; if (!f) return;
+  curFile = f.name; document.getElementById('fn').textContent = f.name;
+  const r = new FileReader();
+  r.onload = ev => { ed.value = ev.target.result; updateLn(); runPreview(); };
+  r.readAsText(f);
+}
+
+function clearEditor() {
+  if (!confirm('Clear?')) return;
+  ed.value = ''; updateLn(); pv.src = 'about:blank'; setStatus('Cleared','idle');
+}
+
+function toggleEditor() {
+  const ep = document.getElementById('ep'), dv = document.getElementById('dv');
+  const h = ep.style.display === 'none';
+  ep.style.display = h ? 'flex' : 'none';
+  dv.style.display = h ? '' : 'none';
+}
+
+function toggleTheme() {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  document.getElementById('themeBtn').innerHTML = isDark
+    ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
+    : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+}
+
+ed.addEventListener('keydown', e => {
+  if (e.key === 'Tab') { e.preventDefault(); const s=ed.selectionStart; ed.value=ed.value.substring(0,s)+'  '+ed.value.substring(ed.selectionEnd); ed.selectionStart=ed.selectionEnd=s+2; updateLn(); }
+  if ((e.ctrlKey||e.metaKey) && e.key==='Enter') { e.preventDefault(); runPreview(); }
+  if ((e.ctrlKey||e.metaKey) && e.key==='s') { e.preventDefault(); saveFile(); }
+});
+
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='f') {
+    e.preventDefault();
+    findInput.focus();
+    findInput.select();
+  }
+  if (e.key === 'Enter' && document.activeElement === findInput) {
+    e.preventDefault();
+    if (e.shiftKey) findPrev(); else findNext();
+  }
+});
+ed.addEventListener('input', () => { updateLn(); clearTimeout(timer); setStatus('Editing…','idle'); timer=setTimeout(runPreview,800); });
+ed.addEventListener('keyup', updateCursor);
+ed.addEventListener('click', updateCursor);
+ed.addEventListener('scroll', () => { ln.scrollTop = ed.scrollTop; });
+
+const dv = document.getElementById('dv');
+let drag=false, sx=0, sw=0;
+dv.addEventListener('mousedown', e => { drag=true; sx=e.clientX; sw=document.getElementById('ep').offsetWidth; document.body.style.cssText='cursor:col-resize;user-select:none'; });
+document.addEventListener('mousemove', e => { if(!drag)return; const ep=document.getElementById('ep'); const w=Math.max(180,Math.min(document.getElementById('ws').offsetWidth-180,sw+e.clientX-sx)); ep.style.flex='none'; ep.style.width=w+'px'; });
+document.addEventListener('mouseup', () => { drag=false; document.body.style.cssText=''; });
+
+updateLn();
+runPreview();
+setStatus('Ready','idle');
+</script>
+</body>
+</html>
