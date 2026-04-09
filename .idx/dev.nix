@@ -1,7 +1,9 @@
 { pkgs, ... }: {
   channel = "stable-24.11";
 
-  packages = [];
+  packages = [
+    pkgs.python3
+  ];
 
   idx = {
     workspace = {
@@ -12,7 +14,7 @@
       enable = true;
       previews = {
         web = {
-          command = ["npx" "--yes" "serve" "-l" "$PORT" "."];
+          command = ["python3" "-m" "http.server" "$PORT"];
           manager = "web";
         };
       };
