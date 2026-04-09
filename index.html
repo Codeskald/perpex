@@ -83,6 +83,7 @@
       font-size: 0.875rem;
       color: var(--accent);
       font-weight: 500;
+      margin-bottom: 2rem;
     }
 
     .dot {
@@ -97,6 +98,31 @@
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.4; transform: scale(0.8); }
     }
+
+    .links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .links a {
+      display: block;
+      padding: 0.625rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: background 150ms, border-color 150ms;
+    }
+
+    .links a:hover {
+      background: var(--bg);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
   </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -110,6 +136,10 @@
       <div class="status">
         <span class="dot"></span>
         <span>live</span>
+      </div>
+      <div class="links">
+        <a href="./html-editor.html">✏️ HTML Editor</a>
+        <a href="./liquid_glass_vibrancy.html">🪟 Liquid Glass Vibrancy</a>
       </div>
     </div>
   </main>
